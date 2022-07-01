@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <title>Gallery with Fade Animation</title>
+        <meta charset = "UTF-8">
+        <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+
+        <!--the current image panel-->
+        <div style = "position:absolute; left:450px; top:0px;" >
+            <img src = "./image1.jpg" alt = "main" width = "1000" height = "600" id = "image"/>      
+        </div>
+
+
+        <!--the different image buttons-->
+        <div style = "position:absolute; left:200px; top:625px;" >
+            <input type="image" onclick = "changeImage('image1.jpg')" src = "./image1.jpg"  width = "300" height = "200"  id = "image1"> 
+        </div>
+
+        <div style = "position:absolute; left:500px; top:625px;" >
+            <input type="image" onclick = "changeImage('image2.jpg')" src = "./image2.jpg"  width = "300" height = "200"  id = "image1"> 
+        </div>
+
+        <div style = "position:absolute; left:800px; top:625px;" >
+            <input type="image" onclick = "changeImage('image3.jpg')" src = "./image3.jpg"  width = "300" height = "200"  id = "image1"> 
+        </div>
+
+        <div style = "position:absolute; left:1100px; top:625px;" >
+           <input type="image" onclick = "changeImage('image4.jpg')" src = "./image4.jpg"  width = "300" height = "200"  id = "image1"> 
+        </div>
+
+        <div style = "position:absolute; left:1400px; top:625px;" >
+            <input type="image" onclick = "changeImage('image5.jpg')" src = "./image5.jpg"  width = "300" height = "200"  id = "image1"> 
+        </div>
+        <!--end image buttons-->
+
+
+        <!--the left/right buttons-->
+        <div style = "position:absolute; left:350px; top:300px;">
+            <button class = "left" type = "button" onclick="moveLeft()">left</button>  <!--the left button-->
+        </div>
+
+        <div style = "position:absolute; left:1500px; top:300px;">
+            <button class = "right" type = "button" onclick="moveRight()">right</button> <!--the right button-->
+        </div>
+
+
+
+        <script>
+            
+            /**
+             * the current image displayed
+             */
+            var currentImage =  document.getElementById("image");
+
+            /**
+             *the current position in the array of the images 
+             */
+            var currentIndex = 0;
+
+            /**
+             * the list of the different images
+             */
+            const imageList = new Array("image1.jpg", "image2.jpg", "image3.jpg", "image4.jpg", "image5.jpg");
+
+            /**
+             * used for fading in and out, the current opacity of the image
+             */ 
+            var opacity = 0;
+
+            /**
+             * used to set the time it takes to fade in/out
+             */ 
+		    var interval = 0;
+
+            /**
+             * which direction to go in the array (left or right)
+             */ 
+            var direction = "";
+
+            /**
+             * which image to switch to in the array
+             */ 
+            var goToImage = "";
+
+            checkDisabled();
+
+
+            /**
+             * gets the current index in the array of the picture shown
+             */ 
+            function getIndex(){
+                for(let i = 0; i < imageList.length; i++){
+                    if(currentImage.src.endsWith(imageList[i])){
+                        currentIndex = i;
+                        break;
+                    }
+                }
+            }
+
+
+            /**
+             * moves the slide one image to the left
+             */ 
+            function moveLeft(){
+                direction = "left";
+                animation();
+            }
+
+
+            /**
+             * moves the slide one image to the right
+             */ 
+            function moveRight(){
+                direction = "right";
+                animation();
+            }
+
+
+            /**
+             * changes the slide to the image specified
+             */ 
+            function changeImage(image){
+                animation();
+                goToImage = image;
+            }
+
+
+            /**
+             * calls for the slide to fade whenever the slide changes
+             */ 
+            function animation(){
+                getIndex();
+                fadeOut();
+            }
+
+
+            /**
+             * checks to see if the left/right buttons should be disabled/enabled
+             */ 
+            function checkDisabled(){
+
+                let leftButton = document.querySelector(".left");
+                let rightButton = document.querySelector(".right");
+
+                if(currentIndex == 0){
+                    leftButton.disabled = true;
+                }else{
+                    leftButton.disabled = false;
+                }
+
+                if(currentIndex == imageList.length-1){
+                    rightButton.disabled = true;
+                }else{
+                    rightButton.disabled = false;
+                }
+            }
+
+
+            /**
+             * fades the image out
+             */ 
+		    function fadeOut(){
+			    interval = setInterval(hideImage,20);
+		    }
+
+
+            /**
+             * fades the image in
+             */ 
+		    function fadeIn(){
+			    interval = setInterval(showImage,20);
+		    }
+
+
+            /**
+             * slowly shows the image over a specified time
+             */ 
+            function showImage(){
+			    opacity = Number(window.getComputedStyle(currentImage).getPropertyValue("opacity"));
+
+			    if(opacity<1){
+				    opacity = opacity+0.1;
+				    currentImage.style.opacity = opacity;
+			    }else{
+				    clearInterval(interval);
+                    checkDisabled();
+			    }
+		    }
+
+
+            /**
+             * slowly hides the image over a specified time
+             */ 
+		    function hideImage(){
+			    opacity = Number(window.getComputedStyle(currentImage).getPropertyValue("opacity"));
+
+			    if(opacity>0){
+				    opacity = opacity-0.1;
+				    currentImage.style.opacity = opacity;
+			    }else{
+				    clearInterval(interval);
+
+                    if(goToImage != ""){
+                        currentImage.src = "./" + goToImage;
+                        getIndex();
+                        goToImage = "";
+                    }else{
+                        if(direction == "left"){
+                            currentImage.src = "./" + imageList[--currentIndex];
+                        }else{
+                            currentImage.src = "./" + imageList[++currentIndex];
+                        }
+                    }
+                    
+                    fadeIn();
+			    }
+		    }
+
+        </script>
+    </body>
+</html>
